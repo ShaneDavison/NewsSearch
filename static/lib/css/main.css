@@ -1,0 +1,42 @@
+.navItems{
+    display: inline;
+    text-align: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: white;
+    vertical-align: auto;
+
+}
+
+ul{
+    text-align: center;
+    
+}
+
+#nav{
+    background-color: #49df87;
+}
+
+li a {
+    color: white;
+    text-decoration: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+li a:hover {
+    color: white;
+    text-decoration: none;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.center-block{
+    margin-top: 12px;
+}
+
+#chart-line-hitsperday{
+    margin-left: 100px;
+
+}
+
+svg{
+    padding-left: 30px;
+}

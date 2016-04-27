@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News Data</title>
+
+    <link rel="stylesheet" href="/static/lib/css/main.css">
+    <link rel="stylesheet" href="/static/lib/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/lib/css/keen-dashboards.css">
+    <link rel="stylesheet" href="/static/lib/css/dc.css">
+
+</head>
+<body class = "application">
+{##}
+
+<div class="navbar navbar-inverse navbar-fixed-top" id="nav" align="center" role="navigation" >
+    <ul class="list-inline center-block text-center">
+
+        <li class="col-md-4"></li>
+        <li class="col-md-4">
+            <input type="text" name="search" id="wordSearch">
+            <button type="button" onclick="loadDoc()">Search</button>
+      </li>
+
+    </ul>
+
+
+</div>
+
+{#<form action="">#}
+{#    First Word:<br>#}
+{#    <input type="text" name="wordSearch" id="wordSearch"><br>#}
+{#</form>#}
+
+
+<div id="loading" style="opacity: 0; font-size:20px">LOADING...</div>
+
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div id="chart-line-hitsperday"></div>
+
+
+<script>
+
+    function drawLineChart(hit_data) {
+            data = JSON.parse(hit_data);
+            var ndx = crossfilter(data);
+            var parseDate = d3.time.format("%Y").parse;
+            data.forEach(function(d) {
+                d['year'] = parseDate(d['year']);
+                d['hits']= d['hits'];
+            });
+
+            var dateDim = ndx.dimension(function(d) { return d["year"];});
+
+            var hits = dateDim.group().reduceSum(function(d) {return d["hits"];});
+
+
+            var minDate = dateDim.bottom(1)[0]["year"];
+            var maxDate = dateDim.top(1)[0]["year"];
+            var maxHits = hits.top(1)[0]['hits'];
+            var minHits = 0;
+            var hitslineChart  = dc.lineChart("#chart-line-hitsperday");
+
+            hitslineChart
+                .width(1200).height(400).yAxisPadding(100)
+                .dimension(dateDim)
+                .group(hits)
+                .x(d3.time.scale().domain([minDate,maxDate]))
+                .elasticY(true)
+                .axisLabelDistance = -20
+
+
+            dc.renderAll();
+        }
+
+
+var gif = document.getElementById('loading');
+
+        function loadDoc() {
+          var searchterm = document.getElementById("wordSearch").value;
+            var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+              if (xhttp.readyState == 4 && xhttp.status == 200) {
+              gif.style.opacity = '0';
+                  drawLineChart(xhttp.responseText);
+            }
+          };
+            gif.style.opacity = '1';
+            xhttp.open("GET", "/search/" + searchterm, true);
+
+
+          xhttp.send();
+        }
+
+
+
+
+</script>
+
+
+<script src="/static/lib/js/jquery.min.js"></script>
+<script src="/static/lib/js/bootstrap.min.js"></script>
+<script src="/static/lib/js/crossfilter.js"></script>
+<script src="/static/lib/js/d3.js"></script>
+<script src="/static/lib/js/dc.js"></script>
+<script src="/static/lib/js/queue.js"></script>
+<script src="/static/lib/js/graph.js" type="text/javascript"></script>
+<script src="/static/lib/js/keen.min.js"></script>
+
+</body>
+
+</html>
